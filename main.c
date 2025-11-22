@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "hash_functions.h"
 
 int main()
 {
