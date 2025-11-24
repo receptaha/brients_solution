@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "headers/datas_and_structures.h"
 #include "headers/hash_functions.h"
-#include "headers/prime_functions.h"
+
 
 int main()
 {
-    printf("is %d a prime number?\tAnswer is %d\n", 19237123, is_prime_number(19237123));
-    printf("what is the next prime number for %d?\tAnswer is %d\n", 19237123, first_prime_number_after(19237123));
+    struct AddressSpace* as = init_address_space();
+    print_hash_table(as);
     return 0;
 }
