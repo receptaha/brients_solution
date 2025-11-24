@@ -2,16 +2,16 @@
 #define DATA_STRUCTURES_H
 #define PACKING_RATE 0.8
 
-struct Person {
+typedef struct Person {
     unsigned long tc;
     unsigned int age;
     char* name;
-};
+}Person;
 
-struct AddressSpace {
+typedef struct AddressSpace {
     unsigned int record_count;
     unsigned int hash_table_size;
-    struct Person** hash_table;
-};
+    Person** hash_table;
+}AddressSpace;
 
 #endif

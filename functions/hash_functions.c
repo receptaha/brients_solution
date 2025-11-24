@@ -11,8 +11,8 @@ unsigned int hash_2(unsigned long key, unsigned int address_size) {
     return key / address_size;
 }
 
-struct AddressSpace* init_address_space() {
-    struct AddressSpace* as = malloc(sizeof(struct AddressSpace));
+    AddressSpace* init_address_space() {
+    AddressSpace* as = malloc(sizeof(AddressSpace));
     if (as == NULL) {
         printf("\nAddress Space cannot allocated");
         exit(-1);
@@ -22,21 +22,21 @@ struct AddressSpace* init_address_space() {
 
     as->hash_table_size = smallest_prime_number;
     as->record_count = 0;
-    as->hash_table = malloc(sizeof(struct Person*) * as->hash_table_size);
+    as->hash_table = malloc(sizeof(Person*) * as->hash_table_size);
     if (as->hash_table == NULL) {
         printf("\nHash Table cannot allocated");
         free(as);
         exit(-1);
     }
 
-    for (unsigned int i = 0; i < smallest_prime_number; i++) {
+    for (unsigned int i = 0; i < as-> hash_table_size; i++) {
         as->hash_table[i] = NULL;
     }
     return as;
 }
 
-void print_hash_table(struct AddressSpace* as) {
-    printf("Güncel tablo durumu : %u kayıt mevcut\n", as->hash_table_size);
+void print_hash_table(AddressSpace* as) {
+    printf("Rigth now there are  : %u records exist\n", as->hash_table_size);
 
     for (unsigned int i = 0; i < as->hash_table_size; i++) {
         if (as->hash_table[i] != NULL) {
@@ -46,3 +46,4 @@ void print_hash_table(struct AddressSpace* as) {
         }
     }
 }
+
