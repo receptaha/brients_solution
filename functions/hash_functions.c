@@ -40,10 +40,87 @@ void print_hash_table(AddressSpace* as) {
 
     for (unsigned int i = 0; i < as->hash_table_size; i++) {
         if (as->hash_table[i] != NULL) {
-            printf("%u: Kayıt TC: %lu\n", i, as->hash_table[i]->tc);
+            printf("%u: Record ID: %lu\n", i, as->hash_table[i]->id);
         } else {
-            printf("%u: BOŞ\n", i);
+            printf("%u: No record here\n", i);
         }
     }
 }
 
+Person* newRecord(int id, int age, char* name) {
+    Person* new = malloc(sizeof(Person*));
+
+    if (new == NULL) {
+        printf("Couldn't allocate enough space for a new record, exiting...\n");
+        return 0;
+    }
+
+    new -> id = id;
+    new -> age = age;
+    new -> name = name;
+
+    return new;
+}
+
+
+int spaceFinder(Person* per, AddressSpace* as) {
+    int size = as -> hash_table_size;
+    int h1 = per -> id % size;
+    int h2 = (per -> id / size) + 1;
+    int counter = 1;
+    int function = (h1 + h2 * counter) % size;
+
+while (as -> hash_table[function] != NULL && counter < size * 2) {
+        counter++;
+    }
+
+    if (counter >= size * 2) {
+        printf("Couldn't find a space in enough time, must expand the whole table\n");
+        return 0;
+    }
+
+
+
+    return counter;
+}
+
+void insert(AddressSpace* as, int id, int age, char* name) {
+
+    if (as -> hash_table_size * 0.8 <= as -> record_count) {
+        restore_hash_table(as);
+        printf("Not enough space to insert, must expand the whole table\n");
+        return;
+    }
+
+
+    int size = as -> hash_table_size;
+    Person* new = newRecord(id, age, name);
+    int h1 = new -> id % size;
+    int h2 = new -> id / size + 1;
+    Person* old = as -> hash_table[h1];
+
+    if (old != NULL) {
+        int newCounter = spaceFinder(new, as);
+        int oldCounter = spaceFinder(old, as);
+
+        if (newCounter == 0 || oldCounter == 0) {
+            restore_hash_table(as);
+            return;
+        }
+
+        if (newCounter > oldCounter) {
+
+            int functionOld = (h1 + h2 * oldCounter) % size;
+
+            as -> hash_table[h1] = new;
+            as -> hash_table[functionOld] = old;
+        }
+        else {
+            int functionNew = (h1 + h2 * oldCounter) % size;
+
+            as -> hash_table[functionNew] = new;
+        }
+        return;
+    }
+    as -> hash_table[h1] = new;
+}

@@ -3,7 +3,7 @@
 #define PACKING_RATE 0.8
 
 typedef struct Person {
-    unsigned long tc;
+    unsigned long id;
     unsigned int age;
     char* name;
 }Person;
