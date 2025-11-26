@@ -12,7 +12,7 @@ unsigned int hash_2(unsigned long key, unsigned int address_size) {
     return key / address_size;
 }
 
-    AddressSpace* init_address_space() {
+AddressSpace* init_address_space() {
     AddressSpace* as = malloc(sizeof(AddressSpace));
     if (as == NULL) {
         printf("\nAddress Space cannot allocated");
@@ -37,11 +37,11 @@ unsigned int hash_2(unsigned long key, unsigned int address_size) {
 }
 
 void print_hash_table(AddressSpace* as) {
-    printf("Rigth now there are  : %u records exist\n", as->hash_table_size);
+    printf("Table size : %d\t Record count : %d\n", as->hash_table_size, as->record_count);
 
     for (unsigned int i = 0; i < as->hash_table_size; i++) {
         if (as->hash_table[i] != NULL) {
-            printf("%u: Record ID: %lu\n", i, as->hash_table[i]->id);
+            printf("%u: Record ID: %llu\n", i, as->hash_table[i]->id);
         } else {
             printf("%u: No record here\n", i);
         }
@@ -68,7 +68,7 @@ void restore_hash_table(AddressSpace* as) {
     free(temp_hash);
 }
 
-Person* newRecord(int id, int age, char* name) {
+Person* newRecord(unsigned long long id, int age, char* name) {
     Person* new = malloc(sizeof(Person));
 
     if (new == NULL) {
@@ -96,7 +96,7 @@ int spaceFinder(Person* per, AddressSpace* as) {
     }
 
     if (counter >= size) {
-        printf("Couldn't find any space for id : %lu\n", per->id);
+        printf("Couldn't find any space for id : %llu\n", per->id);
         return 0;
 }
     return counter;
@@ -110,9 +110,10 @@ void force_insert(AddressSpace* as, Person* per) {
     while (!insert(as, per->id, per->age, per->name)) {
         restore_hash_table(as);
     }
+    printf("\n" "%llu force inserted\n", per->id);
 }
 
-int insert(AddressSpace* as, int id, int age, char* name) {
+int insert(AddressSpace* as, unsigned long long id, int age, char* name) {
 
     Person* new = newRecord(id, age, name);
     if (as -> hash_table_size * 0.8 <= as -> record_count) {
@@ -149,6 +150,33 @@ int insert(AddressSpace* as, int id, int age, char* name) {
     as -> hash_table[h1] = new;
     as->record_count++;
     return 1;
+}
+
+void get(AddressSpace* as, unsigned long long id) {
+    unsigned int quotient = id / as->hash_table_size + 1;
+    unsigned int index = id % as->hash_table_size;
+    unsigned int counter = 0;
+
+    while (counter < as->hash_table_size) {
+
+        if (as->hash_table[index] == NULL) {
+            counter++;
+            continue;
+        }
+
+        if (as->hash_table[index]->id == id) {
+            break;
+        }
+
+        counter++;
+        index = (index + quotient) % as->hash_table_size;
+    }
+
+    if (counter >= as->hash_table_size) {
+        printf("\nID %llu not found\n", id);
+    } else {
+        printf("\nAddress : %u\t ID : %llu\n", index, id);
+    }
 }
 
 
