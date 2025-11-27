@@ -37,13 +37,13 @@ AddressSpace* init_address_space() {
 }
 
 void print_hash_table(AddressSpace* as) {
-    printf("Table size : %d\t Record count : %d\n", as->hash_table_size, as->record_count);
+    printf("\nTable size : %d\t Record count : %d\n", as->hash_table_size, as->record_count);
 
     for (unsigned int i = 0; i < as->hash_table_size; i++) {
         if (as->hash_table[i] != NULL) {
             printf("%u: Record ID: %llu\n", i, as->hash_table[i]->id);
         } else {
-            printf("%u: No record here\n", i);
+            printf("%u: NULL\n", i);
         }
     }
 }
@@ -88,18 +88,16 @@ int spaceFinder(Person* per, AddressSpace* as) {
     int size = as -> hash_table_size;
     int h1 = per -> id % size;
     int h2 = (per -> id / size) + 1;
-    int counter = 1;
-    int function = (h1 + h2 * counter) % size;
-
-    while (as -> hash_table[function] != NULL && counter != size) {
-        counter++;
+    int prope = 0;
+    while (as -> hash_table[(h1 + h2 * prope) % size] != NULL && prope != size) {
+        prope++;
     }
 
-    if (counter >= size) {
+    if (prope >= size) {
         printf("Couldn't find any space for id : %llu\n", per->id);
         return 0;
 }
-    return counter;
+    return prope;
 }
 
 void force_insert(AddressSpace* as, Person* per) {
@@ -114,18 +112,18 @@ void force_insert(AddressSpace* as, Person* per) {
 }
 
 int insert(AddressSpace* as, unsigned long long id, int age, char* name) {
-
-    Person* new = newRecord(id, age, name);
     if (as -> hash_table_size * 0.8 <= as -> record_count) {
         return 0;
     }
 
+    Person* new = newRecord(id, age, name);
     int size = as -> hash_table_size;
-    int h1 = new -> id % size;
-    int h2 = new -> id / size + 1;
-    Person* old = as -> hash_table[h1];
+    int index = new -> id % size;
+    int news_quotient = (new -> id / size) + 1;
+    Person* old = as -> hash_table[index];
 
     if (old != NULL) {
+        int olds_quotient = (old->id / size) + 1;
         int newCounter = spaceFinder(new, as);
         int oldCounter = spaceFinder(old, as);
 
@@ -134,20 +132,16 @@ int insert(AddressSpace* as, unsigned long long id, int age, char* name) {
         }
 
         if (newCounter > oldCounter) {
-
-            int functionOld = (h1 + h2 * oldCounter) % size;
-
-            as -> hash_table[h1] = new;
-            as -> hash_table[functionOld] = old;
+            as -> hash_table[index] = new;
+            as -> hash_table[(index + olds_quotient * oldCounter) % size] = old;
         }
         else {
-            int functionNew = (h1 + h2 * newCounter) % size;
-            as -> hash_table[functionNew] = new;
+            as->hash_table[(index + news_quotient * newCounter) % size] = new;
         }
         as->record_count++;
         return 1;
     }
-    as -> hash_table[h1] = new;
+    as -> hash_table[index] = new;
     as->record_count++;
     return 1;
 }
