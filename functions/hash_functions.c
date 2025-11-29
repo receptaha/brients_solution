@@ -12,16 +12,15 @@ unsigned int hash_2(unsigned long long key, unsigned long long address_size) {
     return key / address_size + 1;
 }
 
-AddressSpace* init_address_space() {
+AddressSpace* init_address_space(unsigned long long size) {
     AddressSpace* as = malloc(sizeof(AddressSpace));
     if (as == NULL) {
         printf("\nAddress Space cannot allocated");
         exit(-1);
     }
 
-    unsigned long long smallest_prime_number = first_prime_number_after(1);
 
-    as->hash_table_size = smallest_prime_number;
+    as->hash_table_size = is_prime_number(size) ? size : first_prime_number_after(size);
     as->record_count = 0;
     as->hash_table = malloc(sizeof(Person*) * as->hash_table_size);
     if (as->hash_table == NULL) {
@@ -114,18 +113,17 @@ void force_insert(AddressSpace* as, Person* per) {
         return;
     }
 
-    while (!insert(as, per->id, per->age, per->name)) {
+    while (!insert(as, per)) {
         restore_hash_table(as);
     }
     printf("\n" "%llu force inserted\n", per->id);
 }
 
-int insert(AddressSpace* as, unsigned long long id, unsigned int age, char* name) {
+int insert(AddressSpace* as, Person* new) {
     if (as->record_count * 100 / as->hash_table_size > 80) {
         return 0;
     }
 
-    Person* new = newRecord(id, age, name);
     unsigned long long size = as -> hash_table_size;
     unsigned long long index = hash_1(new->id, size);
     unsigned int news_quotient = hash_2(new->id, size);
