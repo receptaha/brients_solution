@@ -48,9 +48,10 @@ void print_hash_table(AddressSpace* as) {
 }
 
 void restore_hash_table(AddressSpace* as) {
+    // Resizes hash table to next prime number after current hash table size
     printf("\nHash table is restoring\n");
-    unsigned long long new_size = first_prime_number_after(as->hash_table_size);
     unsigned long long first_size = as->hash_table_size;
+    unsigned long long new_size = first_prime_number_after(first_size);
     Person** temp_hash = malloc(sizeof(Person*) * first_size);
     for (unsigned long long i = 0; i < first_size; i++) {
         temp_hash[i] = as->hash_table[i];
@@ -87,6 +88,7 @@ Person* newRecord(unsigned long long id, unsigned int age, char* name) {
 
 
 unsigned long long spaceFinder(Person* per, AddressSpace* as) {
+    // Returns probe count for next space address which for given person
     unsigned long long size = as -> hash_table_size;
     unsigned long long h1 = hash_1(per->id, size);
     unsigned int h2 = hash_2(per->id, size);
@@ -103,6 +105,7 @@ unsigned long long spaceFinder(Person* per, AddressSpace* as) {
 }
 
 void force_insert(AddressSpace* as, Person* per) {
+    // tries to add the person to the table. if not, resize the table and tries again.
     if (per == NULL) {
         printf("Person is NULL, exiting...");
         exit(-1);
@@ -121,7 +124,8 @@ void force_insert(AddressSpace* as, Person* per) {
 }
 
 int insert(AddressSpace* as, Person* new) {
-    if (as->record_count * 100 / as->hash_table_size > 80) {
+    // Tries to add the person on the table and return 1. If not return 0
+    if (as->record_count * 100 / as->hash_table_size > PACKING_RATE) {
         return 0;
     }
 
@@ -155,6 +159,7 @@ int insert(AddressSpace* as, Person* new) {
 }
 
 unsigned long long find(AddressSpace* as, unsigned long long id) {
+    // Finds the person address/index which has given id. If not returns -1
     unsigned long long index = hash_1(id, as->hash_table_size);
     unsigned int quotient = hash_2(id, as->hash_table_size);
     unsigned int counter = 0;

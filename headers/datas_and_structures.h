@@ -1,6 +1,6 @@
 #ifndef DATA_STRUCTURES_H
 #define DATA_STRUCTURES_H
-#define PACKING_RATE 0.8
+#define PACKING_RATE 80
 
 typedef struct Person {
     unsigned long long id;
