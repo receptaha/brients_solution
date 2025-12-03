@@ -48,6 +48,7 @@ void print_hash_table(AddressSpace* as) {
 }
 
 void restore_hash_table(AddressSpace* as) {
+    printf("\nHash table is restoring\n");
     unsigned long long new_size = first_prime_number_after(as->hash_table_size);
     unsigned long long first_size = as->hash_table_size;
     Person** temp_hash = malloc(sizeof(Person*) * first_size);
