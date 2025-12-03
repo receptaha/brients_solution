@@ -8,7 +8,8 @@
 int main()
 {
     unsigned int record_count = 1213;
-    AddressSpace* as = init_address_space(record_count * 100 / 80);
+    AddressSpace* as = init_address_space(record_count);
+
     for (unsigned int id = 0; id < record_count; id++) {
         Person* person = newRecord(id, 5, "abcdefgh");
         force_insert(as, person);
